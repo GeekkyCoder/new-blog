@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const cors = require("cors");
+const morgan = require("morgan")
 const mongooseSanitize = require("express-mongo-sanitize");
 
 const authRouter = require("./routes/auth/auth.route");
@@ -15,6 +16,7 @@ const MONGO_URL = process.env.MONGO_URL;
 app.use(helmet());
 app.use(express.json());
 app.use(mongooseSanitize());
+app.use(morgan("short"))
 
 app.use(
   cors({

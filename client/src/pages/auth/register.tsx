@@ -1,28 +1,56 @@
 // src/components/Register.tsx
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { registerUser } from "../../store/auth/authReducer";
-import { RootState, useAppDispatch } from "../../store/store";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+// import { register } from "../../redux/slices/auth/authReducer";
+import { RegisterUser } from "../../types/user-types";
+import { registerUser, selectError, selectLoading, selectUser } from "../../redux/slices/auth/authReducer";
 
 const Register: React.FC = () => {
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const dispatch = useAppDispatch();
-  const { loading, error } = useSelector((state: RootState) => state.auth);
+
+  const {registerLoading} = useAppSelector(selectLoading)
+  const {registerError} = useAppSelector(selectError)
+
 
   const handleRegister = () => {
-    dispatch(registerUser({ name, email, password }));
+    const user: RegisterUser = {
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+    };
+
+    dispatch(registerUser(user));
+    setFirstName("")
+    setLastName("")
+    setEmail("")
+    setPassword("")
+    setConfirmPassword("")
   };
 
   return (
     <div>
       <h2>Register</h2>
       <input
+        name="firstName"
         type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Name"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        placeholder="first name"
+      />
+      <input
+        name="lastName"
+        type="text"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        placeholder="last name"
       />
       <input
         type="email"
@@ -36,10 +64,14 @@ const Register: React.FC = () => {
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
       />
-      <button onClick={handleRegister} disabled={loading}>
-        {loading ? "Loading..." : "Register"}
-      </button>
-      {error && <p>{error}</p>}
+      <input
+        type="password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        placeholder="confirm passsword"
+      />
+      <button onClick={handleRegister} disabled={registerLoading}>{registerLoading ? "laoding" : "register"}</button>
+      <h2>{JSON.stringify(registerError)}</h2>
     </div>
   );
 };

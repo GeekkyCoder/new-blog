@@ -1,17 +1,29 @@
 // src/components/Login.tsx
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { loginUser } from "../../store/auth/authReducer";
-import { RootState, useAppDispatch } from "../../store/store";
+import {  loginUser, selectUser } from "../../redux/slices/auth/authReducer";
+
+import { useAppSelector, useAppDispatch } from "../../redux/hooks";
+
+type LoginUser = {
+   email:string;
+   password:string
+};
+
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useAppDispatch();
-  const { loading, error } = useSelector((state: RootState) => state.auth);
+  const userData = useAppSelector(selectUser);
 
   const handleLogin = () => {
-    dispatch(loginUser({ email, password }));
+
+    const user:LoginUser = {
+         email,
+         password
+    }
+
+    dispatch(loginUser(user));
   };
 
   return (
@@ -29,10 +41,8 @@ const Login: React.FC = () => {
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
       />
-      <button onClick={handleLogin} disabled={loading}>
-        {loading ? "Loading..." : "Login"}
-      </button>
-      {error && <p>{error}</p>}
+      <button onClick={handleLogin}>login</button>
+      {JSON.stringify(userData)}
     </div>
   );
 };

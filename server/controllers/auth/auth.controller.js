@@ -1,15 +1,15 @@
 const crypto = require("crypto");
 const User = require("../../modals/user/user.modal");
 const jwt = require("jsonwebtoken");
-const sendVerificationEmail = require("../../utils/sendVerificationEmail")
+const sendVerificationEmail = require("../../utils/sendVerificationEmail");
 
 const register = async (req, res) => {
-  const { name, email, password, confirmPassword } = req.body;
+  const { firstName, lastName, email, password, confirmPassword } = req.body;
 
-  if (!name || !email || !password) {
+  if (!firstName || !lastName || !email || !password) {
     return res
       .status(401)
-      .json({ msg: "please provide name email and password" });
+      .json({ msg: "please provide first name,last name, email and password" });
   }
   try {
     const userAlreadyExist = await User.findOne({ email });
@@ -28,7 +28,8 @@ const register = async (req, res) => {
     const verificationToken = crypto.randomBytes(40).toString("hex");
 
     const user = await User.create({
-      name,
+      firstName,
+      lastName,
       email,
       password,
       confirmPassword,
@@ -41,7 +42,7 @@ const register = async (req, res) => {
     const origin = "http://localhost:5173";
 
     await sendVerificationEmail({
-      name: user.name,
+      name: `${user?.firstName}} ${user?.lastName}`,
       email: user.email,
       verificationToken: user.verificationToken,
       origin,
